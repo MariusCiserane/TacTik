@@ -1,4 +1,4 @@
-#include "controleur.h"
+#include "Controleur.h"
 
 #include <iostream>
 #include <cassert>
@@ -500,7 +500,7 @@ void jouer(bool versionGraphique, bool dev){
 	controleur.initJeu(nbJoueurs, IA);
 	Jeu &jeu = controleur.getJeu();
 	int ordre[6] = {1, 2, 5, 3, 4, 6};
-	int tour = 0;
+	int tour = 1;
 	while (true) {
 		if (!dev) {
 			jeu.distribuer();

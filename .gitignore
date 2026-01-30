@@ -1,3 +1,43 @@
-obj/*.o
-.vscode
-doc/html/*
+# --- Fichiers Compilés & Objets ---
+*.o
+*.obj
+*.a
+*.lib
+
+# --- Dossiers de construction (Make) ---
+obj/
+obj_win/
+
+# --- Dossiers de construction (CMake) ---
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+*.cbp
+
+# --- Exécutables (Dossier bin) ---
+bin/*
+!bin/.gitkeep
+
+# Exécutables à la racine (au cas où)
+*.exe
+*.out
+mainTXT
+mainSDL
+mainDEV
+test
+
+# --- Documentation générée ---
+doc/html/
+doc/latex/
+*.log
+*.aux
+
+# --- Fichiers Système & IDE ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*~
+*.swp

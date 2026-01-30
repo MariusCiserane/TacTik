@@ -1,175 +1,132 @@
+# --- Configuration Principale ---
+CXX = g++
 CXXFLAGS = -Wall -g -c
-CORE = src/core
-AFFICHAGE = src/affichage
+LDFLAGS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_gfx
+
+# --- Dossiers ---
+SRC_DIR = src
+BIN_DIR = bin
+OBJ_DIR = obj
+WIN_OBJ_DIR = obj_win
+DOC_DIR = doc
+
+CORE = $(SRC_DIR)/core
+AFFICHAGE = $(SRC_DIR)/affichage
 TXT = $(AFFICHAGE)/txt
 SDL = $(AFFICHAGE)/sdl
-INCLUDE_DIR = -I/usr/include/SDL2
-LIB_SDL = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_gfx
 
-# Pour installer SDL2 sous linux
-# sudo apt-get update
-# sudo apt-get install libsdl2-dev
-# sudo apt-get install libsdl2-image-dev libsdl2-ttf-dev
+# --- Fichiers Objets ---
+# Objets communs au noyau du jeu
+CORE_OBJS = $(OBJ_DIR)/Carte.o $(OBJ_DIR)/Pioche.o $(OBJ_DIR)/Pion.o \
+            $(OBJ_DIR)/Joueur.o $(OBJ_DIR)/IA.o $(OBJ_DIR)/Plateau.o \
+            $(OBJ_DIR)/Jeu.o
 
+# Objets d'affichage et contrôle
+VIEW_OBJS = $(OBJ_DIR)/AffichageConsole.o $(OBJ_DIR)/AffichageGraphique.o \
+            $(OBJ_DIR)/Controleur.o
 
-all: clean test bin/mainTXT bin/mainSDL bin/mainTXT.exe
+# --- Cibles Principales ---
 
-test: memcheck_test
+all: clean bin_dir $(BIN_DIR)/mainTXT $(BIN_DIR)/mainSDL
 
-dev: bin/mainDEV
-	./bin/mainDEV
+# Exécution rapide
+txt: $(BIN_DIR)/mainTXT
+	./$(BIN_DIR)/mainTXT
 
-txt: bin/mainTXT
-	./bin/mainTXT
+sdl: $(BIN_DIR)/mainSDL
+	./$(BIN_DIR)/mainSDL
 
-sdl: bin/mainSDL
-	./bin/mainSDL
+dev: $(BIN_DIR)/mainDEV
+	./$(BIN_DIR)/mainDEV
 
-doc: cleandoc doc/doxyfile doc/html
-	doxygen doc/doxyfile
+test: $(BIN_DIR)/test
+	valgrind --leak-check=full --track-origins=yes ./$(BIN_DIR)/test
 
-doc/html:
-	doxygen doc/doxyfile
-
-bin/test:obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/mainTEST.o
-	g++ obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/mainTEST.o -o bin/test
-
-bin/mainTXT: obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/AffichageConsole.o obj/AffichageGraphique.o obj/controleur.o obj/mainTXT.o
-	g++ obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/AffichageConsole.o obj/AffichageGraphique.o obj/controleur.o obj/mainTXT.o -o bin/mainTXT $(LIB_SDL)
-
-bin/mainSDL: obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/AffichageConsole.o obj/AffichageGraphique.o obj/controleur.o obj/mainSDL.o
-	g++ obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/AffichageConsole.o obj/AffichageGraphique.o obj/controleur.o obj/mainSDL.o -o bin/mainSDL $(LIB_SDL)
-
-bin/mainDEV: obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/AffichageConsole.o obj/AffichageGraphique.o obj/controleur.o obj/mainDEV.o
-	g++ obj/Carte.o obj/Pioche.o obj/Pion.o obj/Joueur.o obj/IA.o obj/Plateau.o obj/Jeu.o obj/AffichageConsole.o obj/AffichageGraphique.o obj/controleur.o obj/mainDEV.o -o bin/mainDEV $(LIB_SDL)
-
-obj/mainTEST.o: src/mainTEST.cpp $(CORE)/Jeu.h
-	g++ $(CXXFLAGS) src/mainTEST.cpp -o obj/mainTEST.o
-
-obj/mainTXT.o: src/mainTXT.cpp $(AFFICHAGE)/controleur.h
-	g++ $(CXXFLAGS) src/mainTXT.cpp -o obj/mainTXT.o
-
-obj/mainSDL.o: src/mainSDL.cpp $(AFFICHAGE)/controleur.h
-	g++ $(CXXFLAGS) $(INCLUDE_DIR) src/mainSDL.cpp -o obj/mainSDL.o
-
-obj/mainDEV.o: src/mainDEV.cpp $(AFFICHAGE)/controleur.h
-	g++ $(CXXFLAGS) $(INCLUDE_DIR) src/mainDEV.cpp -o obj/mainDEV.o
-
-obj/controleur.o: $(AFFICHAGE)/controleur.cpp $(AFFICHAGE)/controleur.h $(TXT)/AffichageConsole.h $(SDL)/AffichageGraphique.h
-	g++ $(CXXFLAGS) $(INCLUDE_DIR) $(AFFICHAGE)/controleur.cpp -o obj/controleur.o
-
-obj/AffichageConsole.o: $(TXT)/AffichageConsole.cpp $(TXT)/AffichageConsole.h $(CORE)/Jeu.h
-	g++ $(CXXFLAGS) $(TXT)/AffichageConsole.cpp -o obj/AffichageConsole.o
-
-obj/AffichageGraphique.o: $(SDL)/AffichageGraphique.cpp $(SDL)/AffichageGraphique.h
-	g++ $(CXXFLAGS) $(INCLUDE_DIR) $(SDL)/AffichageGraphique.cpp -o obj/AffichageGraphique.o
-
-obj/Jeu.o: $(CORE)/Jeu.cpp $(CORE)/Jeu.h $(CORE)/Joueur.h $(CORE)/IA.h $(CORE)/Pioche.h $(CORE)/Plateau.h
-	g++ $(CXXFLAGS) $(CORE)/Jeu.cpp -o obj/Jeu.o
-
-obj/Carte.o: $(CORE)/Carte.cpp $(CORE)/Carte.h
-	g++ $(CXXFLAGS) $(CORE)/Carte.cpp -o obj/Carte.o
-
-obj/Pioche.o: $(CORE)/Pioche.cpp $(CORE)/Pioche.h $(CORE)/Carte.h
-	g++ $(CXXFLAGS) $(CORE)/Pioche.cpp -o obj/Pioche.o
-
-obj/Pion.o: $(CORE)/Pion.cpp $(CORE)/Pion.h
-	g++ $(CXXFLAGS) $(CORE)/Pion.cpp -o obj/Pion.o
-
-obj/Joueur.o: $(CORE)/Joueur.cpp $(CORE)/Joueur.h $(CORE)/Carte.h
-	g++ $(CXXFLAGS) $(CORE)/Joueur.cpp -o obj/Joueur.o
-
-obj/IA.o: $(CORE)/IA.cpp $(CORE)/IA.h
-	g++ $(CXXFLAGS) $(CORE)/IA.cpp -o obj/IA.o
-
-obj/Plateau.o: $(CORE)/Plateau.cpp $(CORE)/Plateau.h $(CORE)/Pion.h
-	g++ $(CXXFLAGS) $(CORE)/Plateau.cpp -o obj/Plateau.o
-
-memcheck_test: bin/test
-	valgrind --leak-check=full --track-origins=yes ./bin/test
-
-clean:
-	rm -rf obj/*.o bin/* obj_win
+# Documentation
+doc:
+	doxygen $(DOC_DIR)/doxyfile
 
 cleandoc:
-	rm -rf doc/html
+	rm -rf $(DOC_DIR)/html
 
+# Nettoyage
+clean:
+	rm -rf $(OBJ_DIR)/*.o $(BIN_DIR)/* $(WIN_OBJ_DIR)/*.o
 
-# ---------------------------------------------------------------------------
-# Ajout de la cible mainWindows pour générer mainTXT.exe pour Windows
-# On utilise le compilateur croisé MinGW-w64 (x86_64-w64-mingw32-g++)
-# Les objets Windows seront placés dans le dossier obj_win
+# --- Compilation des Exécutables ---
+
+$(BIN_DIR)/mainTXT: $(CORE_OBJS) $(VIEW_OBJS) $(OBJ_DIR)/mainTXT.o
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+$(BIN_DIR)/mainSDL: $(CORE_OBJS) $(VIEW_OBJS) $(OBJ_DIR)/mainSDL.o
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+$(BIN_DIR)/mainDEV: $(CORE_OBJS) $(VIEW_OBJS) $(OBJ_DIR)/mainDEV.o
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+$(BIN_DIR)/test: $(CORE_OBJS) $(OBJ_DIR)/mainTEST.o
+	$(CXX) $^ -o $@
+
+# --- Compilation des Objets (Règles génériques simplifiées) ---
+
+$(OBJ_DIR)/%.o: $(CORE)/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+$(OBJ_DIR)/%.o: $(TXT)/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+$(OBJ_DIR)/%.o: $(SDL)/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+$(OBJ_DIR)/%.o: $(AFFICHAGE)/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+# Création du dossier bin si nécessaire
+bin_dir:
+	mkdir -p $(BIN_DIR) $(OBJ_DIR)
+
+# --- Cross-Compilation Windows (MinGW) ---
 
 CROSS = x86_64-w64-mingw32-g++
-CROSS_CXXFLAGS = -Wall -g -c -municode -DUNICODE -D_UNICODE \
-				 $(shell x86_64-w64-mingw32-pkg-config sdl2 SDL2_image SDL2_ttf SDL2_gfx --cflags)
-WIN_OBJ_DIR = obj_win
-LDFLAGS = $(shell x86_64-w64-mingw32-pkg-config sdl2 SDL2_image SDL2_ttf SDL2_gfx --libs)
+CROSS_FLAGS = -Wall -g -c -municode -DUNICODE -D_UNICODE $(shell x86_64-w64-mingw32-pkg-config sdl2 SDL2_image SDL2_ttf SDL2_gfx --cflags)
+CROSS_LDFLAGS = $(shell x86_64-w64-mingw32-pkg-config sdl2 SDL2_image SDL2_ttf SDL2_gfx --libs) -static -static-libgcc -static-libstdc++ -lmingw32
 
-# Règle pour créer le dossier d'objets Windows s'il n'existe pas
+# Cibles Windows
+mainTXTWindows: $(BIN_DIR)/mainTXT.exe
+mainSDLWindows: $(BIN_DIR)/mainSDL.exe
+mainDEVWindows: $(BIN_DIR)/mainDEV.exe
+
+# Règles Windows génériques
 $(WIN_OBJ_DIR):
 	mkdir -p $(WIN_OBJ_DIR)
 
-# Règles pour compiler les sources du répertoire CORE avec le compilateur Windows
-$(WIN_OBJ_DIR)/Carte.o: $(CORE)/Carte.cpp $(CORE)/Carte.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(CORE)/Carte.cpp -o $(WIN_OBJ_DIR)/Carte.o
+$(WIN_OBJ_DIR)/%.o: $(CORE)/%.cpp | $(WIN_OBJ_DIR)
+	$(CROSS) $(CROSS_FLAGS) $< -o $@
 
-$(WIN_OBJ_DIR)/Pioche.o: $(CORE)/Pioche.cpp $(CORE)/Pioche.h $(CORE)/Carte.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(CORE)/Pioche.cpp -o $(WIN_OBJ_DIR)/Pioche.o
+$(WIN_OBJ_DIR)/%.o: $(TXT)/%.cpp | $(WIN_OBJ_DIR)
+	$(CROSS) $(CROSS_FLAGS) $< -o $@
 
-$(WIN_OBJ_DIR)/Pion.o: $(CORE)/Pion.cpp $(CORE)/Pion.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(CORE)/Pion.cpp -o $(WIN_OBJ_DIR)/Pion.o
+$(WIN_OBJ_DIR)/%.o: $(SDL)/%.cpp | $(WIN_OBJ_DIR)
+	$(CROSS) $(CROSS_FLAGS) $< -o $@
 
-$(WIN_OBJ_DIR)/Joueur.o: $(CORE)/Joueur.cpp $(CORE)/Joueur.h $(CORE)/Carte.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(CORE)/Joueur.cpp -o $(WIN_OBJ_DIR)/Joueur.o
+$(WIN_OBJ_DIR)/%.o: $(AFFICHAGE)/%.cpp | $(WIN_OBJ_DIR)
+	$(CROSS) $(CROSS_FLAGS) $< -o $@
 
-$(WIN_OBJ_DIR)/IA.o: $(CORE)/IA.cpp $(CORE)/IA.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(CORE)/IA.cpp -o $(WIN_OBJ_DIR)/IA.o
+$(WIN_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(WIN_OBJ_DIR)
+	$(CROSS) $(CROSS_FLAGS) $< -o $@
 
-$(WIN_OBJ_DIR)/Plateau.o: $(CORE)/Plateau.cpp $(CORE)/Plateau.h $(CORE)/Pion.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(CORE)/Plateau.cpp -o $(WIN_OBJ_DIR)/Plateau.o
+# Linkage Windows
+WIN_CORE_OBJS = $(addprefix $(WIN_OBJ_DIR)/, $(notdir $(CORE_OBJS)))
+WIN_VIEW_OBJS = $(addprefix $(WIN_OBJ_DIR)/, $(notdir $(VIEW_OBJS)))
 
-$(WIN_OBJ_DIR)/Jeu.o: $(CORE)/Jeu.cpp $(CORE)/Jeu.h $(CORE)/Joueur.h $(CORE)/IA.h $(CORE)/Pioche.h $(CORE)/Plateau.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(CORE)/Jeu.cpp -o $(WIN_OBJ_DIR)/Jeu.o
+$(BIN_DIR)/mainTXT.exe: $(WIN_CORE_OBJS) $(WIN_VIEW_OBJS) $(WIN_OBJ_DIR)/mainTXT.o | bin_dir
+	$(CROSS) $^ -o $@ $(CROSS_LDFLAGS)
 
-# Règles pour compiler les sources spécifiques
-$(WIN_OBJ_DIR)/AffichageConsole.o: $(TXT)/AffichageConsole.cpp $(TXT)/AffichageConsole.h $(CORE)/Jeu.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(TXT)/AffichageConsole.cpp -o $(WIN_OBJ_DIR)/AffichageConsole.o
+$(BIN_DIR)/mainSDL.exe: $(WIN_CORE_OBJS) $(WIN_VIEW_OBJS) $(WIN_OBJ_DIR)/mainSDL.o | bin_dir
+	$(CROSS) $^ -o $@ $(CROSS_LDFLAGS)
 
-$(WIN_OBJ_DIR)/AffichageGraphique.o: $(SDL)/AffichageGraphique.cpp $(SDL)/AffichageGraphique.h $(CORE)/Jeu.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(SDL)/AffichageGraphique.cpp -o $(WIN_OBJ_DIR)/AffichageGraphique.o
-
-$(WIN_OBJ_DIR)/controleur.o: $(AFFICHAGE)/controleur.cpp $(AFFICHAGE)/controleur.h $(TXT)/AffichageConsole.h $(SDL)/AffichageGraphique.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) $(AFFICHAGE)/controleur.cpp -o $(WIN_OBJ_DIR)/controleur.o
-
-$(WIN_OBJ_DIR)/mainTXT.o: src/mainTXT.cpp $(AFFICHAGE)/controleur.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) src/mainTXT.cpp -o $(WIN_OBJ_DIR)/mainTXT.o
-
-$(WIN_OBJ_DIR)/mainSDL.o: src/mainSDL.cpp $(AFFICHAGE)/controleur.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) src/mainSDL.cpp -o $(WIN_OBJ_DIR)/mainSDL.o
-
-$(WIN_OBJ_DIR)/mainDEV.o: src/mainDEV.cpp $(AFFICHAGE)/controleur.h | $(WIN_OBJ_DIR)
-	$(CROSS) $(CROSS_CXXFLAGS) src/mainDEV.cpp -o $(WIN_OBJ_DIR)/mainDEV.o
-
-# Règle de linkage pour générer les exécutables Windows
-bin/mainTXT.exe: $(WIN_OBJ_DIR)/Carte.o $(WIN_OBJ_DIR)/Pioche.o $(WIN_OBJ_DIR)/Pion.o $(WIN_OBJ_DIR)/Joueur.o $(WIN_OBJ_DIR)/IA.o $(WIN_OBJ_DIR)/Plateau.o $(WIN_OBJ_DIR)/Jeu.o $(WIN_OBJ_DIR)/AffichageConsole.o $(WIN_OBJ_DIR)/AffichageGraphique.o $(WIN_OBJ_DIR)/controleur.o $(WIN_OBJ_DIR)/mainTXT.o | bin
-	$(CROSS) $^ -static -static-libgcc -static-libstdc++ -lmingw32 $(LDFLAGS) -o bin/mainTXT.exe
-
-bin/mainSDL.exe: $(WIN_OBJ_DIR)/Carte.o $(WIN_OBJ_DIR)/Pioche.o $(WIN_OBJ_DIR)/Pion.o $(WIN_OBJ_DIR)/Joueur.o $(WIN_OBJ_DIR)/IA.o $(WIN_OBJ_DIR)/Plateau.o $(WIN_OBJ_DIR)/Jeu.o $(WIN_OBJ_DIR)/AffichageConsole.o $(WIN_OBJ_DIR)/AffichageGraphique.o $(WIN_OBJ_DIR)/controleur.o $(WIN_OBJ_DIR)/mainSDL.o | bin
-	$(CROSS) $^ -static -static-libgcc -static-libstdc++ -lmingw32 $(LDFLAGS) -o bin/mainSDL.exe
-
-bin/mainDEV.exe: $(WIN_OBJ_DIR)/Carte.o $(WIN_OBJ_DIR)/Pioche.o $(WIN_OBJ_DIR)/Pion.o $(WIN_OBJ_DIR)/Joueur.o $(WIN_OBJ_DIR)/IA.o $(WIN_OBJ_DIR)/Plateau.o $(WIN_OBJ_DIR)/Jeu.o $(WIN_OBJ_DIR)/AffichageConsole.o $(WIN_OBJ_DIR)/AffichageGraphique.o $(WIN_OBJ_DIR)/controleur.o $(WIN_OBJ_DIR)/mainDEV.o | bin
-	$(CROSS) $^ -static -static-libgcc -static-libstdc++ -lmingw32 $(LDFLAGS) -o bin/mainDEV.exe
-# Assure que le dossier bin existe
-bin:
-	mkdir -p bin
-
-# Cible mainWindows qui génère l'exécutable Windows
-mainTXTWindows: clean bin/mainTXT.exe
-	@echo "Windows executable generated: bin/mainTXT.exe"
-
-mainSDLWindows: clean bin/mainSDL.exe
-	@echo "Windows executable generated: bin/mainSDL.exe"
-
-mainDEVWindows: bin/mainDEV.exe
-	@echo "Windows executable generated: bin/mainDEV.exe"
+$(BIN_DIR)/mainDEV.exe: $(WIN_CORE_OBJS) $(WIN_VIEW_OBJS) $(WIN_OBJ_DIR)/mainDEV.o | bin_dir
+	$(CROSS) $^ -o $@ $(CROSS_LDFLAGS)

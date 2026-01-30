@@ -1,84 +1,115 @@
-# LIFAPCD_Tac-Tik
+# LIFAPCD - Tac-Tik C++
 
+![Language](https://img.shields.io/badge/language-C++-blue.svg)
+![Build](https://img.shields.io/badge/build-Make%20%7C%20CMake-green)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
+## 📝 Description
 
-***
+Ce projet est une réécriture en C++ du jeu de société **Tac-Tik**, un jeu de stratégie combinant hasard et tactique (similaire aux Petits Chevaux mais joués avec des cartes).
 
+L’objectif est de fournir une expérience fidèle au jeu de plateau original, tout en mettant en œuvre une architecture **MVC (Modèle-Vue-Contrôleur)** et des concepts avancés de programmation orientée objet.
 
-## Description
-Ce projet est une réécriture en C++ du jeu de société TacTik, un jeu de stratégie combinant hasard et tactique. 
-Il propose deux modes de jeu : une version console accessible via le terminal, et une version graphique utilisant la bibliothèque SDL2.
-L’objectif est de fournir une expérience fidèle au jeu de plateau original, tout en mettant en œuvre des concepts 
-de programmation orientée objet et de gestion d’affichage en C++. 
+### Fonctionnalités
+* **Deux modes de jeu :**
+    * 🖥️ **Console :** Accessible via le terminal, légère et rapide.
+    * 🎮 **Graphique (SDL2) :** Interface visuelle complète avec souris et animations.
+* **Documentation complète :**
+    * [Présentation du projet et choix techniques (PDF)](Presentation.pdf)
+    * [Règles officielles du jeu (PDF)](Règles_du_jeu_Tac-Tik-1.pdf)
+    * [Planning de réalisation (Gantt)](CC_DiagrammeGantt.pdf)
 
-## Architecture
-    .
-    ├── bin                          # Fichiers compilés
-    ├── obj                          # Fichiers binaires
-    ├── data                         # Images et Police
-    │   ├── cartes                   # Images des cartes
-    │   └── plateau                  # Images du plateau
-    ├── doc                          # Documentation
-    │   ├── html                     # Documentaion HTML
-    │   └── doxyfile                 # Fichier de configuration Doxygen
-    ├── src                          # Fichiers sources
-    │   ├── core                     # Code du jeu
-    │   ├── txt                      # Code de l'affichage console
-    │   └── sdl                      # Code de l'affichage graphique
-    ├── Makefile                     
-    └── README.md
+## 📂 Architecture du projet
 
-## Installation et execution
-### Linux
-#### Prerequis
- - Compilateur C++ (ex g++)
- - Make
- - Les bibliothèques SDL2 :
-````
+```text
+.
+├── bin/                 # Exécutables générés
+├── obj/                 # Fichiers objets temporaires (Linux)
+├── obj_win/             # Fichiers objets temporaires (Windows)
+├── data/                # Ressources (Assets)
+│   ├── cartes/          # Sprites des cartes
+│   └── plateau/         # Images des plateaux
+├── doc/                 # Documentation Doxygen
+├── src/                 # Code Source
+│   ├── core/            # Logique du jeu
+│   └── affichage/       # Gestion des Vues et du Contrôleur
+│       ├── sdl/         # Implémentation Graphique
+│       ├── txt/         # Implémentation Console
+│       └── Controleur   # Lien Modèle-Vue
+├── SDL2-*/              # Bibliothèques pour compilation Windows (MinGW)
+├── CMakeLists.txt       # Configuration CMake
+├── Makefile             # Configuration Make
+└── README.md
+```
+
+## ⚙️ Installation et Exécution (Linux)
+
+### Prérequis
+* Compilateur C++ (g++)
+* Make ou CMake
+* Bibliothèques SDL2 :
+
+```bash
 sudo apt-get update
-sudo apt-get install libsdl2-dev
-sudo apt-get install libsdl2-image-dev libsdl2-ttf-dev
-sudo apt-get install libsdl2-gfx-dev
+sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-gfx-dev
+```
 
-````
+### Méthode 1 : Via Makefile (Recommandé)
 
-#### Compilation
-Clonez le projet puis compilez les différents modules
-````
-make txt       # Compile et lance la version console
-make sdl       # Compile et lance la version graphique SDL2
-make dev      # Compile la version "développeur"
+Compilez les différents modules à l'aide des commandes suivantes :
+
+```bash
+make txt       # Compile la version console
+make sdl       # Compile la version graphique SDL2
 make doc       # Génère la documentation Doxygen
-make mainTXTWindows   # Génère la version texte pour Windows (nécessite MinGW installé)
-make mainSDLWindows   # Génère la version grapghique pour Windows (nécessite MinGW installé)
-make mainDEVWindows   # Génère la version déveleoppeur pour Windows (nécessite MinGW installé)
-````
+make test      # Vérifie les fuites mémoires avec Valgrind
+```
 
-#### Execution
-Une fois compilé, vous pouvez lancer les exécutables depuis le dossier `` bin/`` :
-````
-./bin/mainTXT       # Version console
-./bin/mainSDL       # Version graphique SDL2
-````
+### Lancer le jeu :
 
-#### Tests mémoire
-Une cible de test avec ``valgrind`` est également disponible :
-````
-make test    # Vérifie les fuites mémoires
-````
+```bash
+./bin/mainTXT   # Version console
+./bin/mainSDL   # Version graphique
+```
 
-#### Nettoyage
-Pour supprimer les fichiers objets et executables
-````
+### Méthode 2 : Via CMake
+
+```bash
+mkdir build && cd build
+cmake ..
+make
+./mainSDL
+```
+
+## 🪟 Compilation pour Windows (Cross-Compilation)
+
+Le projet permet de générer des exécutables `.exe` pour Windows depuis un environnement Linux (nécessite `MinGW`).
+
+### Prérequis :
+
+```bash
+sudo apt-get install mingw-w64
+```
+
+### Commandes de compilation :
+```bash
+make mainTXTWindows   # Génère bin/mainTXT.exe
+make mainSDLWindows   # Génère bin/mainSDL.exe
+make mainDEVWindows   # Génère bin/mainDEV.exe (Debug)
+```
+
+## 🧹 Nettoyages
+
+Pour supprimer les fichiers objets et les exécutables :
+
+```bash
 make clean        # Supprime les .o et les exécutables
-make veryclean    # Supprime aussi la documentation
-````
+make veryclean    # Supprime aussi la documentation générée
+```
 
-## Contributeurs
+## 👥 Contributeurs
 
- Ce projet à été réalisé dans le cadre d'un travail en binôme par :
- - Marius CISERANE p2303380
- - Valentin LAPORTE p2302750
- 
- Le projet est hébergé sur le GitLab de Lyon1 avec comme ID 38209
+Ce projet a été réalisé dans le cadre de l'unité d'enseignement LIFAPCD à l'Université Lyon 1.
 
+* **Marius CISERANE**
+* **Valentin LAPORTE**
