@@ -500,7 +500,7 @@ void jouer(bool versionGraphique, bool dev){
 	controleur.initJeu(nbJoueurs, IA);
 	Jeu &jeu = controleur.getJeu();
 	int ordre[6] = {1, 2, 5, 3, 4, 6};
-	int tour = 1;
+	int tour = 0;
 	while (true) {
 		if (!dev) {
 			jeu.distribuer();
@@ -514,7 +514,7 @@ void jouer(bool versionGraphique, bool dev){
 			}
 		}
 
-		controleur.afficherJeu(-1, "Tour " + to_string(tour));
+		controleur.afficherJeu(-1, "Tour " + to_string(tour+1));
 		
 		for (int i = 0 ; i < 4 ; i++) {
 			for (int j = tour ; j < nbJoueurs + tour ; j++) {
@@ -523,7 +523,7 @@ void jouer(bool versionGraphique, bool dev){
 				controleur.tourJoueur(dev);
 				if (!controleur.getRunning()) return ;
 				if (jeu.partieGagnee()) {
-					cout << "Nombre de tours de jeu : " << tour << endl;
+					cout << "Nombre de tours de jeu : " << tour+1 << endl;
 					controleur.setJoueurActif(6);
 					controleur.afficherJeu(6);
 					return controleur.afficherVainqueur(couleur);
