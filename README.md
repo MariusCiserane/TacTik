@@ -1,56 +1,49 @@
-# LIFAPCD - Tac-Tik C++
+# Tac-Tik C++
 
-![Language](https://img.shields.io/badge/language-C++-blue.svg)
-![Build](https://img.shields.io/badge/build-Make%20%7C%20CMake-orange)
-![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)
+![Language](https://img.shields.io/badge/Language-C++-00599c)
+![Build](https://img.shields.io/badge/Build-Make_|_CMake-orange)
+![Library](https://img.shields.io/badge/Library-SDL2-red)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-## 📝 Description
+Adaptation en C++ du jeu de société **Tac-Tik**, développée selon une architecture **MVC (Modèle-Vue-Contrôleur)**.
+Projet réalisé dans l'UE "Conception et Développement d'Applications" (S4, Polytech Lyon).
 
-Ce projet est une réécriture en C++ du jeu de société **Tac-Tik**, un jeu de stratégie combinant hasard et tactique (similaire aux Petits Chevaux mais joués avec des cartes).
+## Fonctionnalités
 
-L’objectif est de fournir une expérience fidèle au jeu de plateau original, tout en mettant en œuvre une architecture **MVC (Modèle-Vue-Contrôleur)** et des concepts avancés de programmation orientée objet.
+* **Mode Console :** Léger et rapide, jouable dans le terminal.
+* **Mode Graphique :** Interface complète avec souris et animations (SDL2).
+* **Intelligence Artificielle :** Joueur contre Ordinateur (IA basique).
 
-### Fonctionnalités
-* **Deux modes de jeu :**
-    * 🖥️ **Console :** Accessible via le terminal, légère et rapide.
-    * 🎮 **Graphique (SDL2) :** Interface visuelle complète avec souris et animations.
-* **Documentation complète :**
-    * [Présentation du projet et choix techniques (PDF)](project-files/Presentation.pdf)
-    * [Règles officielles du jeu (PDF)](project-files/Règles_du_jeu_Tac-Tik-1.pdf)
-    * [Planning de réalisation (Gantt)](project-files/CC_DiagrammeGantt.pdf)
+## Architecture Technique
 
-## 📂 Architecture du projet
+Le projet suit le pattern MVC pour séparer la logique (Core) de l'affichage (Console/SDL).
+
+### Documentation
+* [Présentation et choix techniques](project-files/Presentation.pdf)
+* [Règles du jeu](project-files/Règles_du_jeu_Tac-Tik-1.pdf)
+* [Diagramme de Gantt](project-files/CC_DiagrammeGantt.pdf)
+
+## Architecture du projet
 
 ```text
 .
-├── bin/                 # Exécutables générés
-├── obj/                 # Fichiers objets temporaires (Linux)
-├── obj_win/             # Fichiers objets temporaires (Windows)
-├── data/                # Ressources (Assets)
-│   ├── cartes/          # Images des cartes
-│   └── plateau/         # Images des plateaux
-├── doc/                 # Documentation (Doxygen et Diagrammes)
-├── project-files/       # Règles, rapport et présentations PDF
-├── src/                 # Code Source
-│   ├── mainSDL.cpp      # Point d'entrée Version Graphique
-│   ├── mainTXT.cpp      # Point d'entrée Version Console
-│   ├── mainDEV.cpp      # Point d'entrée Version Développeur
-│   ├── mainTEST.cpp     # Point d'entrée Tests unitaires
-│   ├── core/            # Logique du jeu (Modèle)
-│   └── affichage/       # Gestion des Vues et du Contrôleur
-│       ├── Controleur.* # Lien Modèle-Vue
-│       ├── sdl/         # Implémentation Graphique (Vue)
-│       └── txt/         # Implémentation Console (Vue)
-├── SDL2-*/              # Bibliothèques pour compilation Windows (MinGW)
-├── CMakeLists.txt       # Configuration CMake
-├── Makefile             # Configuration Make
-├── LICENSE              # Licence MIT du projet
+├── bin/                 # Exécutables
+├── data/                # Assets
+├── doc/                 # Documentation Doxygen et diagrammes
+├── src/
+│   ├── mainSDL.cpp
+│   ├── mainTXT.cpp
+│   ├── core/            # Modèle
+│   └── affichage/       # Vues & Contrôleur
+├── CMakeLists.txt
+├── Makefile
+├── LICENSE
 └── README.md
 ```
 
-## ⚙️ Installation et Exécution (Linux)
+## Installation
 
-### Prérequis
+#### Prérequis (Linux)
 * Compilateur C++ (g++)
 * Make ou CMake
 * Bibliothèques SDL2 :
@@ -60,9 +53,9 @@ sudo apt-get update
 sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-gfx-dev
 ```
 
-### Méthode 1 : Via Makefile (Recommandé)
+### Compilation et Exécution
 
-Compilez les différents modules à l'aide des commandes suivantes :
+Utilisez le Makefile fourni :
 
 ```bash
 make txt       # Compile et lance la version console
@@ -70,64 +63,34 @@ make sdl       # Compile et lance la version graphique SDL2
 make dev       # Compile et lance la version Développeur
 make doc       # Génère la documentation Doxygen
 make test      # Vérifie les fuites mémoires avec Valgrind
+make clean     # Supprime les objets (.o) et les binaires
 ```
 
-### Lancer le jeu :
-
-```bash
-./bin/mainTXT   # Version console
-./bin/mainSDL   # Version graphique
-```
-
-### Méthode 2 : Via CMake
-
-```bash
-mkdir build && cd build
-cmake ..
-make
-./mainSDL
-```
-
-## 🪟 Compilation pour Windows (Cross-Compilation)
+### Cross-Compilation (Windows)
 
 Le projet permet de générer des exécutables `.exe` pour Windows depuis un environnement Linux (nécessite `MinGW`).
 
-### Prérequis :
+* **Prérequis :**
 
 ```bash
 sudo apt-get install mingw-w64
 ```
 
-### Commandes de compilation :
+* **Commandes de compilation :**
 ```bash
 make mainTXTWindows   # Génère bin/mainTXT.exe
 make mainSDLWindows   # Génère bin/mainSDL.exe
 make mainDEVWindows   # Génère bin/mainDEV.exe (Debug)
 ```
 
-## 🧹 Nettoyages
-
-Pour supprimer les fichiers objets et les exécutables :
-
-```bash
-make clean        # Supprime les objets (.o) et les binaires
-make cleandoc     # Supprime la documentation générée
-```
-
-## 👥 Contributeurs
-
-Ce projet a été réalisé dans le cadre de l'unité d'enseignement LIFAPCD à l'Université Lyon 1.
+## Auteurs
 
 * **Marius CISERANE**
 * **Valentin LAPORTE**
 
----
 
-## ⚖️ Licence & Propriété Intellectuelle
+## Licence
 
-Le code source de ce projet est distribué sous la licence **MIT**.
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-> **⚠️ Avertissement :**
-> Ce logiciel est une adaptation numérique réalisée à des fins **pédagogiques et non lucratives**.
-> Les règles du jeu, le nom "Tac-Tik" et les concepts originaux restent la propriété exclusive de leurs auteurs et éditeurs respectifs.
-> Ce projet n'est pas affilié à l'éditeur officiel du jeu.
+> **Avertissement :** Ce logiciel est une adaptation numérique réalisée à des fins **pédagogiques et non lucratives**. Les règles du jeu et le nom "Tac-Tik" restent la propriété exclusive de leurs ayants droit.
